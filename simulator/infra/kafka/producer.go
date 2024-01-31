@@ -2,14 +2,14 @@ package kafka
 
 import (
 	"log"
-	"os"
 
+	"github.com/LeonardoMuller13/geomap/config"
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
-func NewKafkaProducer() *ckafka.Producer {
+func NewKafkaProducer(cfg config.Kafka) *ckafka.Producer {
 	configMap := &ckafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KafkaBootstrapServers"),
+		"bootstrap.servers": cfg.BootstrapServers,
 	}
 	p, err := ckafka.NewProducer(configMap)
 	if err != nil {

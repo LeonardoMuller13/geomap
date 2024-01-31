@@ -1,29 +1,21 @@
-package main
+package simulator
 
 import (
 	"fmt"
-	"log"
 
+	"github.com/LeonardoMuller13/geomap/config"
 	kafka2 "github.com/LeonardoMuller13/geomap/simulator/app/kafka"
 	"github.com/LeonardoMuller13/geomap/simulator/infra/kafka"
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	"github.com/joho/godotenv"
 )
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
-func main() {
+func New(cfg config.Kafka) {
 	msgChan := make(chan *ckafka.Message)
 	consumer := kafka.NewKafkaConsumer(msgChan)
-	go consumer.Consume()
+	go consumer.Consume(cfg)
 
 	for msg := range msgChan {
 		fmt.Println(string(msg.Value))
-		go kafka2.Produce(msg)
+		go kafka2.Produce(msg, cfg)
 	}
 }

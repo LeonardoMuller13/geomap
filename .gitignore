@@ -2,3 +2,5 @@ simulator/.idea
 simulator/.vscode
 simulator/.env
 .history/
+.env
+.vscode

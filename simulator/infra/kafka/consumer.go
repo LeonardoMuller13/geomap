@@ -3,8 +3,8 @@ package kafka
 import (
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/LeonardoMuller13/geomap/config"
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
@@ -18,16 +18,16 @@ func NewKafkaConsumer(msgChan chan *ckafka.Message) *KafkaConsumer {
 	}
 }
 
-func (k *KafkaConsumer) Consume() {
+func (k *KafkaConsumer) Consume(cfg config.Kafka) {
 	configMap := &ckafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KafkaBootstrapServers"),
-		"group.id":          os.Getenv("KafkaConsumerGroupId"),
+		"bootstrap.servers": cfg.BootstrapServers,
+		"group.id":          cfg.Consumer,
 	}
 	c, err := ckafka.NewConsumer(configMap)
 	if err != nil {
 		log.Fatalf("Error Consuming Kafka message; " + err.Error())
 	}
-	topics := []string{os.Getenv("KafkaReadTopic")}
+	topics := []string{cfg.ReadTopic}
 	c.SubscribeTopics(topics, nil)
 	fmt.Println("Kafka consumer has been started")
 	for {

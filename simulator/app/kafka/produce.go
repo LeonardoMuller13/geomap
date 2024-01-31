@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
+	"github.com/LeonardoMuller13/geomap/config"
 	route2 "github.com/LeonardoMuller13/geomap/simulator/app/route"
 	"github.com/LeonardoMuller13/geomap/simulator/infra/kafka"
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
-func Produce(msg *ckafka.Message) {
-	producer := kafka.NewKafkaProducer()
+func Produce(msg *ckafka.Message, cfg config.Kafka) {
+	producer := kafka.NewKafkaProducer(cfg)
 	route := route2.NewRoute()
 	json.Unmarshal(msg.Value, &route)
 	err := route.LoadPositions()
@@ -26,7 +26,7 @@ func Produce(msg *ckafka.Message) {
 		log.Println(err.Error())
 	}
 	for _, p := range positions {
-		kafka.Publish(p, os.Getenv("KafkaProduceTopic"), producer)
+		kafka.Publish(p, cfg.ProduceTopic, producer)
 		time.Sleep(time.Millisecond * 500)
 	}
 }
